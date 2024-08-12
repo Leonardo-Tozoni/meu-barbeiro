@@ -1,13 +1,12 @@
 import { SearchIcon } from 'lucide-react';
 import Image from 'next/image';
 import BarbershopItem from './_components/BarbershopItem';
+import BookingItem from './_components/BookingItem';
 import Header from './_components/Header';
 import { Button } from './_components/ui/button';
-import { Card, CardContent } from './_components/ui/card';
 import { Input } from './_components/ui/input';
 import { quickSearchOptions } from './_constants/search';
 import { db } from './_lib/prisma';
-import BookingItem from './_components/BookingItem';
 
 export const Home = async () => {
   const barbershops = await db.barbershop.findMany({});
@@ -74,16 +73,6 @@ export const Home = async () => {
           ))}
         </div>
       </div>
-
-      <footer>
-        <Card>
-          <CardContent className="px-5 py-6">
-            <p className="text-sm text-gray-400">
-              © 2024 Copyright <span className="font-bold">Meu Barbeiro</span>
-            </p>
-          </CardContent>
-        </Card>
-      </footer>
     </>
   );
 };
