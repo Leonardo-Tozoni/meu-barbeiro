@@ -14,6 +14,7 @@ model User {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   bookings  Booking[]
+  imageUrl String
 }
 
 model Barbershop {
