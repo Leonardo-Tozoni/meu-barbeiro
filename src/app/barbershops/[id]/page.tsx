@@ -52,7 +52,6 @@ const BarbershopPage = async ({ params }: IBarbershopPageProps) => {
           size="icon"
           variant="secondary"
           className="absolute right-4 top-4"
-          asChild
         >
           <MenuIcon />
         </Button>
