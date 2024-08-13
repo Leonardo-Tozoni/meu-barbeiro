@@ -4,6 +4,8 @@ import { CalendarIcon, HomeIcon, LogInIcon, LogOutIcon } from 'lucide-react';
 import { signIn, signOut, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useEffect } from 'react';
+import { toast } from 'sonner';
 import { quickSearchOptions } from '../_constants/search';
 import { Avatar, AvatarImage } from './ui/avatar';
 import { Button } from './ui/button';
@@ -18,11 +20,20 @@ import {
 import { SheetClose, SheetContent, SheetHeader, SheetTitle } from './ui/sheet';
 
 const SidebarSheet = () => {
-  const { data } = useSession();
+  const { data, status } = useSession();
 
-  const handleLoginWithGoogle = () => signIn('google');
+  useEffect(() => {
+    if (status === 'authenticated') {
+      toast.success('Login efetuado com sucesso!');
+    }
+  }, [status]);
+
+  const handleLoginWithGoogle = () => {
+    signIn('google');
+  };
 
   const handleSignOut = () => signOut();
+
   return (
     <SheetContent className="overflow-y-auto">
       <SheetHeader>
