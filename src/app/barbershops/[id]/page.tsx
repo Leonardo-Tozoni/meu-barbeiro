@@ -1,13 +1,11 @@
 import PhoneItem from '@/app/_components/PhoneItem';
 import ServiceItem from '@/app/_components/ServiceItem';
-import SidebarSheet from '@/app/_components/SidebarSheet';
-import { Button } from '@/app/_components/ui/button';
-import { Sheet, SheetTrigger } from '@/app/_components/ui/sheet';
+import { authOptions } from '@/app/_lib/auth';
 import { db } from '@/app/_lib/prisma';
-import { ChevronLeftIcon, MapPinIcon, MenuIcon, StarIcon } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
+import { MapPinIcon, StarIcon } from 'lucide-react';
+import { getServerSession } from 'next-auth';
 import { notFound } from 'next/navigation';
+import BarbershopInfo from './_components/BarberShopInfo';
 
 interface IBarbershopPageProps {
   params: {
@@ -16,6 +14,12 @@ interface IBarbershopPageProps {
 }
 
 const BarbershopPage = async ({ params }: IBarbershopPageProps) => {
+  const session = await getServerSession(authOptions);
+
+  if (!params.id) {
+    return null;
+  }
+
   const barbershop = await db.barbershop.findUnique({
     where: {
       id: params.id
@@ -31,38 +35,7 @@ const BarbershopPage = async ({ params }: IBarbershopPageProps) => {
 
   return (
     <div>
-      <div className="relative w-full h-[250px]">
-        <Image
-          alt={barbershop.name}
-          src={barbershop?.imageUrl}
-          fill
-          className="object-cover"
-        />
-
-        <Button
-          size="icon"
-          variant="secondary"
-          className="absolute left-4 top-4"
-          asChild
-        >
-          <Link href="/">
-            <ChevronLeftIcon />
-          </Link>
-        </Button>
-
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button
-              size="icon"
-              variant="outline"
-              className="absolute right-4 top-4"
-            >
-              <MenuIcon />
-            </Button>
-          </SheetTrigger>
-          <SidebarSheet />
-        </Sheet>
-      </div>
+      <BarbershopInfo barbershop={barbershop} />
 
       <div className="p-5 border-b border-solid">
         <h1 className="font-bold text-xl mb-3">{barbershop?.name}</h1>
@@ -89,7 +62,11 @@ const BarbershopPage = async ({ params }: IBarbershopPageProps) => {
         <h1 className="font-bold uppercase text-xs text-gray-400 ">Serviços</h1>
         <div className="space-y-3">
           {barbershop.services.map(service => (
-            <ServiceItem key={service.id} service={service} />
+            <ServiceItem
+              key={service.id}
+              service={service}
+              isAuthenticated={!!session?.user}
+            />
           ))}
         </div>
       </div>

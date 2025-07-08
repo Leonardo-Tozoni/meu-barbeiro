@@ -1,4 +1,5 @@
 import { SearchIcon } from 'lucide-react';
+import { getServerSession } from 'next-auth';
 import Image from 'next/image';
 import BarbershopItem from './_components/BarbershopItem';
 import BookingItem from './_components/BookingItem';
@@ -7,8 +8,10 @@ import { Button } from './_components/ui/button';
 import { Input } from './_components/ui/input';
 import { quickSearchOptions } from './_constants/search';
 import { db } from './_lib/prisma';
+import { authOptions } from './api/auth/[...nextauth]/route';
 
 export const Home = async () => {
+  const session = await getServerSession(authOptions);
   const barbershops = await db.barbershop.findMany({});
   const popularBarbershops = await db.barbershop.findMany({
     orderBy: {
@@ -16,11 +19,17 @@ export const Home = async () => {
     }
   });
 
+  console.log('Session:', session);
+
   return (
     <>
       <Header />
       <div className="p-5">
-        <h2 className="text-xl font-bold">Olá, Leonardo!</h2>
+        {!!session?.user?.name && session.user.name.length > 0 ? (
+          <h2 className="text-xl font-bold">Olá, {session?.user?.name}!</h2>
+        ) : (
+          <h2 className="text-xl font-bold">Olá, visitante!</h2>
+        )}
         <p>Segunda-feira, 05 de agosto</p>
 
         <div className="mt-6 flex items-center gap-2">
