@@ -1,15 +1,7 @@
-import { Card, CardContent } from './ui/card';
-
 const Footer = () => {
   return (
-    <footer>
-      <Card>
-        <CardContent className="px-5 py-6">
-          <p className="text-sm text-gray-400">
-            © 2024 Copyright <span className="font-bold">Meu Barbeiro</span>
-          </p>
-        </CardContent>
-      </Card>
+    <footer className="w-full bg-secondary py-6 px-5">
+      <p className="text-gray-400 text-xs font-bold opacity-75">© 2023 Copyright FSW Barber</p>
     </footer>
   );
 };
