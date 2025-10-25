@@ -129,6 +129,34 @@ async function seedDatabase() {
       barbershops.push(barbershop);
     }
 
+    console.log('Criando usuários barbeiros...');
+    for (let i = 0; i < barbershops.length; i++) {
+      const barbershop = barbershops[i];
+
+      const barberUser = await prisma.user.create({
+        data: {
+          name: `Barbeiro ${barbershop.name}`,
+          email: `barbeiro${i + 1}@${barbershop.name
+            .toLowerCase()
+            .replace(/\s+/g, '')}.com`,
+          role: 'BARBER'
+        }
+      });
+
+      await prisma.barber.create({
+        data: {
+          userId: barberUser.id,
+          barbershopId: barbershop.id
+        }
+      });
+
+      console.log(
+        `Barbeiro criado para ${barbershop.name}: ${barberUser.email}`
+      );
+    }
+
+    console.log('Seed concluído com sucesso!');
+
     // Fechar a conexão com o banco de dados
     await prisma.$disconnect();
   } catch (error) {

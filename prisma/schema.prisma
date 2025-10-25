@@ -7,15 +7,22 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserRole {
+  CLIENT
+  BARBER
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
   email         String?   @unique
   emailVerified DateTime?
   image         String?
+  role          UserRole  @default(CLIENT)
   accounts      Account[]
   sessions      Session[]
   bookings      Booking[]
+  barber        Barber?
 }
 
 model Barbershop {
@@ -25,6 +32,16 @@ model Barbershop {
   imageUrl String
   services Service[]
   bookings Booking[]
+  barbers  Barber[]
+}
+
+model Barber {
+  id           String     @id @default(uuid())
+  userId       String     @unique
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  barbershopId String
+  barbershop   Barbershop @relation(fields: [barbershopId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
 }
 
 model Service {

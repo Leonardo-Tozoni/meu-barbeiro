@@ -7,7 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prepare": "prisma generate"
+    "prepare": "prisma generate",
+    "create-barber": "ts-node scripts/create-barber.ts",
+    "reset-user": "node scripts/reset-user-role.js",
+    "delete-user": "node scripts/delete-user.js"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"

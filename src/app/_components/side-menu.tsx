@@ -4,7 +4,7 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import { SheetHeader, SheetTitle } from "./ui/sheet";
 import { Avatar, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
-import { CalendarIcon, HomeIcon, LogInIcon, LogOutIcon, UserIcon } from "lucide-react";
+import { CalendarIcon, HomeIcon, LogInIcon, LogOutIcon, UserIcon, LayoutDashboardIcon } from "lucide-react";
 import Link from "next/link";
 
 const SideMenu = () => {
@@ -55,7 +55,16 @@ const SideMenu = () => {
           </Link>
         </Button>
 
-        {data?.user && (
+        {data?.user && (data.user as any).role === "BARBER" && (
+          <Button variant="outline" className="justify-start" asChild>
+            <Link href="/barber-dashboard">
+              <LayoutDashboardIcon size={18} className="mr-2" />
+              Dashboard
+            </Link>
+          </Button>
+        )}
+
+        {data?.user && (data.user as any).role !== "BARBER" && (
           <Button variant="outline" className="justify-start" asChild>
             <Link href="/bookings">
               <CalendarIcon size={18} className="mr-2" />

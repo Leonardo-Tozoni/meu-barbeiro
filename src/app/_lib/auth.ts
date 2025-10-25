@@ -14,10 +14,22 @@ export const authOptions: AuthOptions = {
   ],
   callbacks: {
     async session({ session, user }) {
-      session.user = { ...session.user, id: user.id } as {
+      const userWithBarber = await db.user.findUnique({
+        where: { id: user.id },
+        include: { barber: true },
+      });
+
+      session.user = {
+        ...session.user,
+        id: user.id,
+        role: userWithBarber?.role || "CLIENT",
+        barbershopId: userWithBarber?.barber?.barbershopId,
+      } as {
         id: string;
         name: string;
         email: string;
+        role: string;
+        barbershopId?: string;
       };
 
       return session;
