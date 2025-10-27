@@ -7,7 +7,7 @@ import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import { toast } from "sonner";
-import { cancelBooking } from "../_actions/cancel-booking";
+import { cancelBooking } from "@/app/_actions/cancel-booking";
 import BookingInfo from "./booking-info";
 import {
   AlertDialog,

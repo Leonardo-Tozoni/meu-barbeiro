@@ -3,10 +3,10 @@
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../_components/ui/card";
-import { Button } from "../_components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/app/_components/ui/card";
+import { Button } from "@/app/_components/ui/button";
 import { UserIcon, ScissorsIcon, Loader2 } from "lucide-react";
-import { setUserAsClient, setUserAsBarber, getAllBarbershops } from "../_actions/onboarding";
+import { setUserAsClient, setUserAsBarber, getAllBarbershops } from "@/app/_actions/onboarding";
 import { toast } from "sonner";
 import Image from "next/image";
 import { useEffect } from "react";

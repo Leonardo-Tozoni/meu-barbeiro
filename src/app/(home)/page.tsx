@@ -1,12 +1,12 @@
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { getServerSession } from "next-auth";
-import BookingItem from "../_components/booking-item";
-import Header from "../_components/header";
-import { authOptions } from "../_lib/auth";
-import { db } from "../_lib/prisma";
-import BarbershopItem from "./_components/barbershop-item";
-import Search from "./_components/search";
+import BookingItem from "@/app/_components/booking-item";
+import Header from "@/app/_components/header";
+import { authOptions } from "@/app/_lib/auth";
+import { db } from "@/app/_lib/prisma";
+import BarbershopItem from "@/app/(home)/_components/barbershop-item";
+import Search from "@/app/(home)/_components/search";
 
 export default async function Home() {
   const session = await getServerSession(authOptions);

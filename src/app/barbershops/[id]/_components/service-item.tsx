@@ -9,13 +9,13 @@ import { ptBR } from "date-fns/locale";
 import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
-import { generateDayTimeList } from "../_helpers/hours";
+import { generateDayTimeList } from "@/app/barbershops/[id]/_helpers/hours";
 import { addDays, format, setHours, setMinutes } from "date-fns";
-import { saveBooking } from "../_actions/save-booking";
+import { saveBooking } from "@/app/barbershops/[id]/_actions/save-booking";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { getDayBookings } from "../_actions/get-day-bookings";
+import { getDayBookings } from "@/app/barbershops/[id]/_actions/get-day-bookings";
 import BookingInfo from "@/app/_components/booking-info";
 
 interface ServiceItemProps {

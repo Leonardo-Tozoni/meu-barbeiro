@@ -1,6 +1,6 @@
 "use server";
 
-import { db } from "../_lib/prisma";
+import { db } from "@/app/_lib/prisma";
 
 export const getBarbershopBookings = async (barbershopId: string) => {
   const bookings = await db.booking.findMany({
