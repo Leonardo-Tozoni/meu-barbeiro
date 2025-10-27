@@ -1,13 +1,13 @@
-import { getServerSession } from "next-auth";
-import { redirect } from "next/navigation";
-import { authOptions } from "../_lib/auth";
-import { getTodayBarbershopBookings, getUpcomingBarbershopBookings } from "../_actions/get-barbershop-bookings";
-import Header from "../_components/header";
-import { Card, CardContent, CardHeader, CardTitle } from "../_components/ui/card";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
+import { getTodayBarbershopBookings, getUpcomingBarbershopBookings } from "../_actions/get-barbershop-bookings";
+import Header from "../_components/header";
 import { Avatar, AvatarFallback, AvatarImage } from "../_components/ui/avatar";
 import { Badge } from "../_components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "../_components/ui/card";
+import { authOptions } from "../_lib/auth";
 
 const BarberDashboardPage = async () => {
   const session = await getServerSession(authOptions);
