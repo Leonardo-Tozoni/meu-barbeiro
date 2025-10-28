@@ -1,5 +1,6 @@
 "use client";
 
+import { cancelBooking } from "@/app/_actions/cancel-booking";
 import { Barbershop, Service } from "@prisma/client";
 import { format, isFuture } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -7,7 +8,6 @@ import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import { toast } from "sonner";
-import { cancelBooking } from "@/app/_actions/cancel-booking";
 import BookingInfo from "./booking-info";
 import {
   AlertDialog,
