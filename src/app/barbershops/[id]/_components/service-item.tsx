@@ -1,22 +1,22 @@
 "use client";
 
+import BookingInfo from "@/app/_components/booking-info";
 import { Button } from "@/app/_components/ui/button";
 import { Calendar } from "@/app/_components/ui/calendar";
 import { Card, CardContent } from "@/app/_components/ui/card";
 import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/app/_components/ui/sheet";
+import { getDayBookings } from "@/app/barbershops/[id]/_actions/get-day-bookings";
+import { saveBooking } from "@/app/barbershops/[id]/_actions/save-booking";
+import { generateDayTimeList } from "@/app/barbershops/[id]/_helpers/hours";
 import { Barbershop, Booking, Service } from "@prisma/client";
+import { addDays, format, setHours, setMinutes } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { Loader2 } from "lucide-react";
 import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
-import { useEffect, useMemo, useState } from "react";
-import { generateDayTimeList } from "@/app/barbershops/[id]/_helpers/hours";
-import { addDays, format, setHours, setMinutes } from "date-fns";
-import { saveBooking } from "@/app/barbershops/[id]/_actions/save-booking";
-import { Loader2 } from "lucide-react";
-import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { getDayBookings } from "@/app/barbershops/[id]/_actions/get-day-bookings";
-import BookingInfo from "@/app/_components/booking-info";
+import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 
 interface ServiceItemProps {
   barbershop: Barbershop;
@@ -107,7 +107,7 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
       return [];
     }
 
-    return generateDayTimeList(date).filter((time) => {
+    return generateDayTimeList(date, barbershop.name).filter((time) => {
       const timeHour = Number(time.split(":")[0]);
       const timeMinutes = Number(time.split(":")[1]);
 
@@ -124,7 +124,7 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
 
       return false;
     });
-  }, [date, dayBookings]);
+  }, [date, dayBookings, barbershop.name]);
 
   return (
     <Card>
@@ -196,7 +196,6 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
                     />
                   </div>
 
-                  {/* Mostrar lista de horários apenas se alguma data estiver selecionada */}
                   {date && (
                     <div className="flex gap-3 overflow-x-auto py-6 px-5 border-t border-solid border-secondary [&::-webkit-scrollbar]:hidden">
                       {timeList.map((time) => (

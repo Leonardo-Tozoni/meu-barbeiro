@@ -4,7 +4,7 @@ import SideMenu from "@/app/_components/side-menu";
 import { Button } from "@/app/_components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/app/_components/ui/sheet";
 import { Barbershop } from "@prisma/client";
-import { ChevronLeftIcon, MapPinIcon, MenuIcon, StarIcon } from "lucide-react";
+import { ChevronLeftIcon, MapPinIcon, MenuIcon, PhoneIcon } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
@@ -55,9 +55,14 @@ const BarbershopInfo = ({ barbershop }: BarbershopInfoProps) => {
           <MapPinIcon className="text-primary" size={18} />
           <p className="text-sm">{barbershop.address}</p>
         </div>
-        <div className="flex items-center gap-1 mt-2">
+        {/* <div className="flex items-center gap-1 mt-2">
           <StarIcon className="text-primary" size={18} />
           <p className="text-sm">5,0 (899 avaliações)</p>
+        </div> */}
+        <div className="flex items-center gap-1 mt-2">
+          <PhoneIcon className="text-primary" size={18} />
+          <a href="https://api.whatsapp.com/send?phone=5519994275041&text=Ol%C3%A1%2C%20gostaria%20de%20agendar%20um%20hor%C3%A1rio" target="_blank"><p className="text-sm">(19) 99427-5041</p></a> - 
+          <p className="text-sm">Elias Barbeiro</p>
         </div>
       </div>
     </div>
