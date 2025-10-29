@@ -7,6 +7,7 @@ import { authOptions } from "@/app/_lib/auth";
 import { db } from "@/app/_lib/prisma";
 import BarbershopItem from "@/app/(home)/_components/barbershop-item";
 import Search from "@/app/(home)/_components/search";
+import { convertDbDateToLocal } from "@/app/_helpers/date";
 
 export default async function Home() {
   const session = await getServerSession(authOptions);
@@ -34,9 +35,10 @@ export default async function Home() {
       : Promise.resolve([]),
   ]);
 
-  // Serialize bookings to convert Decimal to number
+  // Serialize bookings to convert Decimal to number and adjust dates
   const serializedBookings = confirmedBookings.map((booking) => ({
     ...booking,
+    date: convertDbDateToLocal(booking.date),
     service: {
       ...booking.service,
       price: Number(booking.service.price),

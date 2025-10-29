@@ -5,11 +5,12 @@ import { Button } from "@/app/_components/ui/button";
 import { Calendar } from "@/app/_components/ui/calendar";
 import { Card, CardContent } from "@/app/_components/ui/card";
 import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/app/_components/ui/sheet";
+import { createDateWithLocalTime, dateToComponents } from "@/app/_helpers/date";
 import { getDayBookings } from "@/app/barbershops/[id]/_actions/get-day-bookings";
 import { saveBooking } from "@/app/barbershops/[id]/_actions/save-booking";
 import { generateDayTimeList } from "@/app/barbershops/[id]/_helpers/hours";
 import { Barbershop, Booking, Service } from "@prisma/client";
-import { addDays, format, setHours, setMinutes } from "date-fns";
+import { addDays, format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Loader2 } from "lucide-react";
 import { signIn, useSession } from "next-auth/react";
@@ -74,12 +75,17 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
       const dateHour = Number(hour.split(":")[0]);
       const dateMinutes = Number(hour.split(":")[1]);
 
-      const newDate = setMinutes(setHours(date, dateHour), dateMinutes);
+      const newDate = createDateWithLocalTime(date, dateHour, dateMinutes);
+      const components = dateToComponents(newDate);
 
       await saveBooking({
         serviceId: service.id,
         barbershopId: barbershop.id,
-        date: newDate,
+        year: components.year,
+        month: components.month,
+        day: components.day,
+        hours: components.hours,
+        minutes: components.minutes,
         userId: (data.user as any).id,
       });
 
@@ -217,7 +223,7 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
                         barbershop: barbershop,
                         date:
                           date && hour
-                            ? setMinutes(setHours(date, Number(hour.split(":")[0])), Number(hour.split(":")[1]))
+                            ? createDateWithLocalTime(date, Number(hour.split(":")[0]), Number(hour.split(":")[1]))
                             : undefined,
                         service: service,
                       }}

@@ -4,6 +4,7 @@ import BookingItem from "@/app/_components/booking-item";
 import Header from "@/app/_components/header";
 import { authOptions } from "@/app/_lib/auth";
 import { db } from "@/app/_lib/prisma";
+import { convertDbDateToLocal } from "@/app/_helpers/date";
 
 const BookingsPage = async () => {
   const session = await getServerSession(authOptions);
@@ -44,9 +45,10 @@ const BookingsPage = async () => {
     }),
   ]);
 
-  // Converter Decimal para number
+  // Converter Decimal para number e ajustar datas
   const confirmedBookingsWithPrice = confirmedBookings.map((booking) => ({
     ...booking,
+    date: convertDbDateToLocal(booking.date),
     service: {
       ...booking.service,
       price: Number(booking.service.price),
@@ -55,6 +57,7 @@ const BookingsPage = async () => {
 
   const finishedBookingsWithPrice = finishedBookings.map((booking) => ({
     ...booking,
+    date: convertDbDateToLocal(booking.date),
     service: {
       ...booking.service,
       price: Number(booking.service.price),

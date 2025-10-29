@@ -1,6 +1,7 @@
 "use server";
 
 import { db } from "@/app/_lib/prisma";
+import { convertDbDateToLocal } from "@/app/_helpers/date";
 
 export const getBarbershopBookings = async (barbershopId: string) => {
   const bookings = await db.booking.findMany({
@@ -16,7 +17,10 @@ export const getBarbershopBookings = async (barbershopId: string) => {
     },
   });
 
-  return bookings;
+  return bookings.map((booking) => ({
+    ...booking,
+    date: convertDbDateToLocal(booking.date),
+  }));
 };
 
 export const getBarbershopBookingsByDate = async (
@@ -41,7 +45,10 @@ export const getBarbershopBookingsByDate = async (
     },
   });
 
-  return bookings;
+  return bookings.map((booking) => ({
+    ...booking,
+    date: convertDbDateToLocal(booking.date),
+  }));
 };
 
 export const getTodayBarbershopBookings = async (barbershopId: string) => {
@@ -73,5 +80,8 @@ export const getUpcomingBarbershopBookings = async (barbershopId: string) => {
     },
   });
 
-  return bookings;
+  return bookings.map((booking) => ({
+    ...booking,
+    date: convertDbDateToLocal(booking.date),
+  }));
 };
