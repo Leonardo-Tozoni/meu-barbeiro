@@ -2,6 +2,7 @@ import BookingItem from '@/app/_components/booking-item';
 import Header from '@/app/_components/header';
 import { authOptions } from '@/app/_lib/auth';
 import { db } from '@/app/_lib/prisma';
+import { convertDbDateToLocal } from '@/app/_helpers/date';
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
 
@@ -46,7 +47,7 @@ const BookingsPage = async () => {
 
   const confirmedBookingsWithPrice = confirmedBookings.map(booking => ({
     ...booking,
-    date: booking.date,
+    date: convertDbDateToLocal(booking.date),
     service: {
       ...booking.service,
       price: Number(booking.service.price)
@@ -55,7 +56,7 @@ const BookingsPage = async () => {
 
   const finishedBookingsWithPrice = finishedBookings.map(booking => ({
     ...booking,
-    date: booking.date,
+    date: convertDbDateToLocal(booking.date),
     service: {
       ...booking.service,
       price: Number(booking.service.price)
