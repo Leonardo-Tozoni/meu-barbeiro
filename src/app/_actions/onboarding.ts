@@ -94,3 +94,59 @@ export const getAllBarbershops = async () => {
     return [];
   }
 };
+
+export const createBarbershopAndSetBarber = async (
+  userId: string,
+  barbershopData: {
+    name: string;
+    address: string;
+    imageUrl: string;
+  }
+) => {
+  try {
+    // Verificar se o usuário já é barbeiro de outra barbearia
+    const userBarber = await db.barber.findUnique({
+      where: { userId },
+    });
+
+    if (userBarber) {
+      return {
+        success: false,
+        error: "Você já está vinculado a uma barbearia",
+      };
+    }
+
+    // Criar barbearia, atualizar role do usuário e criar vínculo
+    const result = await db.$transaction(async (tx) => {
+      const barbershop = await tx.barbershop.create({
+        data: {
+          name: barbershopData.name,
+          address: barbershopData.address,
+          imageUrl: barbershopData.imageUrl,
+        },
+      });
+
+      await tx.user.update({
+        where: { id: userId },
+        data: { role: "BARBER" },
+      });
+
+      await tx.barber.create({
+        data: {
+          userId,
+          barbershopId: barbershop.id,
+        },
+      });
+
+      return barbershop;
+    });
+
+    revalidatePath("/");
+    revalidatePath("/barber-dashboard");
+
+    return { success: true, barbershopId: result.id };
+  } catch (error) {
+    console.error("Erro ao criar barbearia:", error);
+    return { success: false, error: "Erro ao criar barbearia" };
+  }
+};

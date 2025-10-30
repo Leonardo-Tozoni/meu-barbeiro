@@ -2,7 +2,9 @@ import {
   getTodayBarbershopBookings,
   getUpcomingBarbershopBookings
 } from '@/app/_actions/get-barbershop-bookings';
+import { getBarbershopServices } from '@/app/_actions/service';
 import Header from '@/app/_components/header';
+import ServicesManagement from '@/app/_components/services-management';
 import {
   Avatar,
   AvatarFallback,
@@ -55,9 +57,10 @@ const BarberDashboardPage = async () => {
     return redirect('/');
   }
 
-  const [todayBookings, upcomingBookings] = await Promise.all([
+  const [todayBookings, upcomingBookings, services] = await Promise.all([
     getTodayBarbershopBookings(barbershopId),
-    getUpcomingBarbershopBookings(barbershopId)
+    getUpcomingBarbershopBookings(barbershopId),
+    getBarbershopServices(barbershopId)
   ]);
 
   const futureBookings = upcomingBookings.filter(booking => {
@@ -76,7 +79,11 @@ const BarberDashboardPage = async () => {
       <div className="px-5 py-6">
         <h1 className="text-xl font-bold mb-6">Dashboard do Barbeiro</h1>
 
-        {/* Agendamentos de Hoje */}
+        <ServicesManagement
+          barbershopId={barbershopId}
+          initialServices={services as any}
+        />
+
         <Card className="mb-6">
           <CardHeader>
             <CardTitle>Agendamentos de Hoje</CardTitle>
@@ -127,7 +134,6 @@ const BarberDashboardPage = async () => {
           </CardContent>
         </Card>
 
-        {/* Próximos Agendamentos */}
         <Card>
           <CardHeader>
             <CardTitle>Próximos Agendamentos</CardTitle>

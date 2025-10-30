@@ -22,13 +22,13 @@ export const authOptions: AuthOptions = {
       session.user = {
         ...session.user,
         id: user.id,
-        role: userWithBarber?.role || "CLIENT",
+        role: userWithBarber?.role,
         barbershopId: userWithBarber?.barber?.barbershopId,
       } as {
         id: string;
         name: string;
         email: string;
-        role: string;
+        role?: string;
         barbershopId?: string;
       };
 

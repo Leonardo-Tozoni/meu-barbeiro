@@ -8,9 +8,15 @@ import { db } from '@/app/_lib/prisma';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { getServerSession } from 'next-auth';
+import { redirect } from 'next/navigation';
 
 export default async function Home() {
   const session = await getServerSession(authOptions);
+
+  // Redirecionar para onboarding se não estiver logado ou não tiver role
+  if (!session?.user || !(session.user as any).role) {
+    redirect('/onboarding');
+  }
 
   const [barbershops, recommendedBarbershops, confirmedBookings] =
     await Promise.all([

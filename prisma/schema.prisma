@@ -18,7 +18,7 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
-  role          UserRole  @default(CLIENT)
+  role          UserRole?
   accounts      Account[]
   sessions      Session[]
   bookings      Booking[]
