@@ -1,21 +1,20 @@
-import { getServerSession } from "next-auth";
-import { redirect } from "next/navigation";
-import BookingItem from "@/app/_components/booking-item";
-import Header from "@/app/_components/header";
-import { authOptions } from "@/app/_lib/auth";
-import { db } from "@/app/_lib/prisma";
-import { convertDbDateToLocal } from "@/app/_helpers/date";
+import BookingItem from '@/app/_components/booking-item';
+import Header from '@/app/_components/header';
+import { authOptions } from '@/app/_lib/auth';
+import { db } from '@/app/_lib/prisma';
+import { getServerSession } from 'next-auth';
+import { redirect } from 'next/navigation';
 
 const BookingsPage = async () => {
   const session = await getServerSession(authOptions);
 
   if (!session?.user) {
-    return redirect("/");
+    return redirect('/');
   }
 
   // Se não é cliente, redirecionar
-  if ((session.user as any).role !== "CLIENT") {
-    return redirect("/");
+  if ((session.user as any).role !== 'CLIENT') {
+    return redirect('/');
   }
 
   const [confirmedBookings, finishedBookings] = await Promise.all([
@@ -23,45 +22,44 @@ const BookingsPage = async () => {
       where: {
         userId: (session.user as any).id,
         date: {
-          gte: new Date(),
-        },
+          gte: new Date()
+        }
       },
       include: {
         service: true,
-        barbershop: true,
-      },
+        barbershop: true
+      }
     }),
     db.booking.findMany({
       where: {
         userId: (session.user as any).id,
         date: {
-          lt: new Date(),
-        },
+          lt: new Date()
+        }
       },
       include: {
         service: true,
-        barbershop: true,
-      },
-    }),
+        barbershop: true
+      }
+    })
   ]);
 
-  // Converter Decimal para number e ajustar datas
-  const confirmedBookingsWithPrice = confirmedBookings.map((booking) => ({
+  const confirmedBookingsWithPrice = confirmedBookings.map(booking => ({
     ...booking,
-    date: convertDbDateToLocal(booking.date),
+    date: booking.date,
     service: {
       ...booking.service,
-      price: Number(booking.service.price),
-    },
+      price: Number(booking.service.price)
+    }
   }));
 
-  const finishedBookingsWithPrice = finishedBookings.map((booking) => ({
+  const finishedBookingsWithPrice = finishedBookings.map(booking => ({
     ...booking,
-    date: convertDbDateToLocal(booking.date),
+    date: booking.date,
     service: {
       ...booking.service,
-      price: Number(booking.service.price),
-    },
+      price: Number(booking.service.price)
+    }
   }));
 
   return (
@@ -73,10 +71,12 @@ const BookingsPage = async () => {
 
         {confirmedBookingsWithPrice.length > 0 && (
           <>
-            <h2 className="text-gray-400 uppercase font-bold text-sm mb-3">Confirmados</h2>
+            <h2 className="text-gray-400 uppercase font-bold text-sm mb-3">
+              Confirmados
+            </h2>
 
             <div className="flex flex-col gap-3">
-              {confirmedBookingsWithPrice.map((booking) => (
+              {confirmedBookingsWithPrice.map(booking => (
                 <BookingItem key={booking.id} booking={booking} />
               ))}
             </div>
@@ -85,10 +85,12 @@ const BookingsPage = async () => {
 
         {finishedBookingsWithPrice.length > 0 && (
           <>
-            <h2 className="text-gray-400 uppercase font-bold text-sm mt-6 mb-3">Finalizados</h2>
+            <h2 className="text-gray-400 uppercase font-bold text-sm mt-6 mb-3">
+              Finalizados
+            </h2>
 
             <div className="flex flex-col gap-3">
-              {finishedBookingsWithPrice.map((booking) => (
+              {finishedBookingsWithPrice.map(booking => (
                 <BookingItem key={booking.id} booking={booking} />
               ))}
             </div>

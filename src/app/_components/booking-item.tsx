@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { cancelBooking } from "@/app/_actions/cancel-booking";
-import { Barbershop, Service } from "@prisma/client";
-import { format, isFuture } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { Loader2 } from "lucide-react";
-import Image from "next/image";
-import { useState } from "react";
-import { toast } from "sonner";
-import BookingInfo from "./booking-info";
+import { cancelBooking } from '@/app/_actions/cancel-booking';
+import { Barbershop, Service } from '@prisma/client';
+import { format, isFuture } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { Loader2 } from 'lucide-react';
+import Image from 'next/image';
+import { useState } from 'react';
+import { toast } from 'sonner';
+import BookingInfo from './booking-info';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,13 +18,21 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
-} from "./ui/alert-dialog";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
-import { Card, CardContent } from "./ui/card";
-import { Sheet, SheetClose, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
+  AlertDialogTrigger
+} from './ui/alert-dialog';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { Badge } from './ui/badge';
+import { Button } from './ui/button';
+import { Card, CardContent } from './ui/card';
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger
+} from './ui/sheet';
 
 interface BookingItemProps {
   booking: {
@@ -33,7 +41,7 @@ interface BookingItemProps {
     serviceId: string;
     barbershopId: string;
     date: Date;
-    service: Omit<Service, "price"> & { price: number };
+    service: Omit<Service, 'price'> & { price: number };
     barbershop: Barbershop;
   };
 }
@@ -49,7 +57,7 @@ const BookingItem = ({ booking }: BookingItemProps) => {
     try {
       await cancelBooking(booking.id);
 
-      toast.success("Reserva cancelada com sucesso!");
+      toast.success('Reserva cancelada com sucesso!');
     } catch (error) {
       console.error(error);
     } finally {
@@ -63,8 +71,11 @@ const BookingItem = ({ booking }: BookingItemProps) => {
         <Card className="min-w-full">
           <CardContent className="py-0 flex px-0">
             <div className="flex flex-col gap-2 py-5 flex-[3] pl-5">
-              <Badge variant={isBookingConfirmed ? "default" : "secondary"} className="w-fit">
-                {isBookingConfirmed ? "Confirmado" : "Finalizado"}
+              <Badge
+                variant={isBookingConfirmed ? 'default' : 'secondary'}
+                className="w-fit"
+              >
+                {isBookingConfirmed ? 'Confirmado' : 'Finalizado'}
               </Badge>
               <h2 className="font-bold">{booking.service.name}</h2>
 
@@ -81,12 +92,14 @@ const BookingItem = ({ booking }: BookingItemProps) => {
 
             <div className="flex flex-col items-center justify-center flex-1 border-l border-solid border-secondary">
               <p className="text-sm capitalize">
-                {format(booking.date, "MMMM", {
-                  locale: ptBR,
+                {format(booking.date, 'MMMM', {
+                  locale: ptBR
                 })}
               </p>
-              <p className="text-2xl">{format(booking.date, "dd")}</p>
-              <p className="text-sm">{format(booking.date, "HH:mm")}</p>
+              <p className="text-2xl">{format(booking.date, 'dd')}</p>
+              <p className="text-sm">
+                {format(booking.date, 'HH:mm', { locale: ptBR })}
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -99,7 +112,11 @@ const BookingItem = ({ booking }: BookingItemProps) => {
 
         <div className="px-5">
           <div className="relative h-[180px] w-full mt-6">
-            <Image src="/barbershop-map.png" fill alt={booking.barbershop.name} />
+            <Image
+              src="/barbershop-map.png"
+              fill
+              alt={booking.barbershop.name}
+            />
 
             <div className="w-full absolute bottom-4 left-0 px-5">
               <Card>
@@ -110,15 +127,20 @@ const BookingItem = ({ booking }: BookingItemProps) => {
 
                   <div>
                     <h2 className="font-bold">{booking.barbershop.name}</h2>
-                    <h3 className="text-xs overflow-hidden text-nowrap text-ellipsis">{booking.barbershop.address}</h3>
+                    <h3 className="text-xs overflow-hidden text-nowrap text-ellipsis">
+                      {booking.barbershop.address}
+                    </h3>
                   </div>
                 </CardContent>
               </Card>
             </div>
           </div>
 
-          <Badge variant={isBookingConfirmed ? "default" : "secondary"} className="w-fit my-3">
-            {isBookingConfirmed ? "Confirmado" : "Finalizado"}
+          <Badge
+            variant={isBookingConfirmed ? 'default' : 'secondary'}
+            className="w-fit my-3"
+          >
+            {isBookingConfirmed ? 'Confirmado' : 'Finalizado'}
           </Badge>
 
           <BookingInfo booking={booking} />
@@ -132,21 +154,35 @@ const BookingItem = ({ booking }: BookingItemProps) => {
 
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button disabled={!isBookingConfirmed || isDeleteLoading} className="w-full" variant="destructive">
+                <Button
+                  disabled={!isBookingConfirmed || isDeleteLoading}
+                  className="w-full"
+                  variant="destructive"
+                >
                   Cancelar Reserva
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent className="w-[90%]">
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Deseja mesmo cancelar essa reserva?</AlertDialogTitle>
+                  <AlertDialogTitle>
+                    Deseja mesmo cancelar essa reserva?
+                  </AlertDialogTitle>
                   <AlertDialogDescription>
                     Uma vez cancelada, não será possível reverter essa ação.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter className="flex-row gap-3">
-                  <AlertDialogCancel className="w-full mt-0">Voltar</AlertDialogCancel>
-                  <AlertDialogAction disabled={isDeleteLoading} className="w-full" onClick={handleCancelClick}>
-                    {isDeleteLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  <AlertDialogCancel className="w-full mt-0">
+                    Voltar
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    disabled={isDeleteLoading}
+                    className="w-full"
+                    onClick={handleCancelClick}
+                  >
+                    {isDeleteLoading && (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    )}
                     Confirmar
                   </AlertDialogAction>
                 </AlertDialogFooter>
