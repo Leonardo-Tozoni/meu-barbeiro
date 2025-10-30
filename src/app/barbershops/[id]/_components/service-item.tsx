@@ -10,7 +10,7 @@ import { getDayBookings } from "@/app/barbershops/[id]/_actions/get-day-bookings
 import { saveBooking } from "@/app/barbershops/[id]/_actions/save-booking";
 import { generateDayTimeList } from "@/app/barbershops/[id]/_helpers/hours";
 import { Barbershop, Booking, Service } from "@prisma/client";
-import { addDays, format } from "date-fns";
+import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Loader2 } from "lucide-react";
 import { signIn, useSession } from "next-auth/react";
@@ -109,28 +109,38 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
   };
 
   const timeList = useMemo(() => {
-    if (!date) {
-      return [];
+  if (!date) return [];
+
+  const now = new Date();
+  const isToday =
+    date.getDate() === now.getDate() &&
+    date.getMonth() === now.getMonth() &&
+    date.getFullYear() === now.getFullYear();
+
+  return generateDayTimeList(date, barbershop.name).filter((time) => {
+    const [timeHour, timeMinutes] = time.split(":").map(Number);
+
+    const booking = dayBookings.find((booking) => {
+      const bookingHour = booking.date.getHours();
+      const bookingMinutes = booking.date.getMinutes();
+      return bookingHour === timeHour && bookingMinutes === timeMinutes;
+    });
+
+    if (booking) return false;
+
+    if (isToday) {
+      const selectedTime = new Date(date);
+      selectedTime.setHours(timeHour, timeMinutes, 0, 0);
+
+      const minAllowed = new Date(now.getTime() + 2 * 60 * 60 * 1000);
+
+      if (selectedTime <= minAllowed) return false;
     }
 
-    return generateDayTimeList(date, barbershop.name).filter((time) => {
-      const timeHour = Number(time.split(":")[0]);
-      const timeMinutes = Number(time.split(":")[1]);
+    return true;
+  });
+}, [date, dayBookings, barbershop.name]);
 
-      const booking = dayBookings.find((booking) => {
-        const bookingHour = booking.date.getHours();
-        const bookingMinutes = booking.date.getMinutes();
-
-        return bookingHour === timeHour && bookingMinutes === timeMinutes;
-      });
-
-      if (!booking) {
-        return true;
-      }
-
-      return false;
-    });
-  }, [date, dayBookings, barbershop.name]);
 
   return (
     <Card>
@@ -176,7 +186,7 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
                         selected={date}
                         onSelect={handleDateClick}
                         locale={ptBR}
-                        fromDate={addDays(new Date(), 1)}
+                        fromDate={new Date()}
                         styles={{
                           head_cell: {
                             width: "100%",
