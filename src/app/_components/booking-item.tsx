@@ -40,7 +40,15 @@ interface BookingItemProps {
     userId: string;
     serviceId: string;
     barbershopId: string;
-    date: Date;
+    date:
+      | Date
+      | {
+          year: number;
+          month: number;
+          day: number;
+          hours: number;
+          minutes: number;
+        };
     service: Omit<Service, 'price'> & { price: number };
     barbershop: Barbershop;
   };
@@ -49,7 +57,20 @@ interface BookingItemProps {
 const BookingItem = ({ booking }: BookingItemProps) => {
   const [isDeleteLoading, setIsDeleteLoading] = useState(false);
 
-  const isBookingConfirmed = isFuture(booking.date);
+  const bookingDate =
+    booking.date instanceof Date
+      ? booking.date
+      : new Date(
+          booking.date.year,
+          booking.date.month - 1,
+          booking.date.day,
+          booking.date.hours,
+          booking.date.minutes,
+          0,
+          0
+        );
+
+  const isBookingConfirmed = isFuture(bookingDate);
 
   const handleCancelClick = async () => {
     setIsDeleteLoading(true);
@@ -92,13 +113,13 @@ const BookingItem = ({ booking }: BookingItemProps) => {
 
             <div className="flex flex-col items-center justify-center flex-1 border-l border-solid border-secondary">
               <p className="text-sm capitalize">
-                {format(booking.date, 'MMMM', {
+                {format(bookingDate, 'MMMM', {
                   locale: ptBR
                 })}
               </p>
-              <p className="text-2xl">{format(booking.date, 'dd')}</p>
+              <p className="text-2xl">{format(bookingDate, 'dd')}</p>
               <p className="text-sm">
-                {format(booking.date, 'HH:mm', { locale: ptBR })}
+                {format(bookingDate, 'HH:mm', { locale: ptBR })}
               </p>
             </div>
           </CardContent>
@@ -143,7 +164,7 @@ const BookingItem = ({ booking }: BookingItemProps) => {
             {isBookingConfirmed ? 'Confirmado' : 'Finalizado'}
           </Badge>
 
-          <BookingInfo booking={booking} />
+          <BookingInfo booking={{ ...booking, date: bookingDate }} />
 
           <SheetFooter className="flex-row gap-3 mt-6">
             <SheetClose asChild>

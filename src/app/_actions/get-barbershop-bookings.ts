@@ -17,10 +17,19 @@ export const getBarbershopBookings = async (barbershopId: string) => {
     },
   });
 
-  return bookings.map((booking) => ({
-    ...booking,
-    date: convertDbDateToLocal(booking.date),
-  }));
+  return bookings.map((booking) => {
+    const localDate = convertDbDateToLocal(booking.date);
+    return {
+      ...booking,
+      date: {
+        year: localDate.getFullYear(),
+        month: localDate.getMonth() + 1,
+        day: localDate.getDate(),
+        hours: localDate.getHours(),
+        minutes: localDate.getMinutes(),
+      },
+    };
+  });
 };
 
 export const getBarbershopBookingsByDate = async (
@@ -45,10 +54,19 @@ export const getBarbershopBookingsByDate = async (
     },
   });
 
-  return bookings.map((booking) => ({
-    ...booking,
-    date: convertDbDateToLocal(booking.date),
-  }));
+  return bookings.map((booking) => {
+    const localDate = convertDbDateToLocal(booking.date);
+    return {
+      ...booking,
+      date: {
+        year: localDate.getFullYear(),
+        month: localDate.getMonth() + 1,
+        day: localDate.getDate(),
+        hours: localDate.getHours(),
+        minutes: localDate.getMinutes(),
+      },
+    };
+  });
 };
 
 export const getTodayBarbershopBookings = async (barbershopId: string) => {
@@ -80,8 +98,17 @@ export const getUpcomingBarbershopBookings = async (barbershopId: string) => {
     },
   });
 
-  return bookings.map((booking) => ({
-    ...booking,
-    date: convertDbDateToLocal(booking.date),
-  }));
+  return bookings.map((booking) => {
+    const localDate = convertDbDateToLocal(booking.date);
+    return {
+      ...booking,
+      date: {
+        year: localDate.getFullYear(),
+        month: localDate.getMonth() + 1,
+        day: localDate.getDate(),
+        hours: localDate.getHours(),
+        minutes: localDate.getMinutes(),
+      },
+    };
+  });
 };

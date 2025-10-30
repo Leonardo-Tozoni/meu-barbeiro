@@ -36,14 +36,23 @@ export default async function Home() {
         : Promise.resolve([])
     ]);
 
-  const serializedBookings = confirmedBookings.map(booking => ({
-    ...booking,
-    date: convertDbDateToLocal(booking.date),
-    service: {
-      ...booking.service,
-      price: Number(booking.service.price)
-    }
-  }));
+  const serializedBookings = confirmedBookings.map(booking => {
+    const localDate = convertDbDateToLocal(booking.date);
+    return {
+      ...booking,
+      date: {
+        year: localDate.getFullYear(),
+        month: localDate.getMonth() + 1,
+        day: localDate.getDate(),
+        hours: localDate.getHours(),
+        minutes: localDate.getMinutes()
+      },
+      service: {
+        ...booking.service,
+        price: Number(booking.service.price)
+      }
+    };
+  });
 
   return (
     <div>

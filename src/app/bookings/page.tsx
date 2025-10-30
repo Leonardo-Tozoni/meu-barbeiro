@@ -1,8 +1,8 @@
 import BookingItem from '@/app/_components/booking-item';
 import Header from '@/app/_components/header';
+import { convertDbDateToLocal } from '@/app/_helpers/date';
 import { authOptions } from '@/app/_lib/auth';
 import { db } from '@/app/_lib/prisma';
-import { convertDbDateToLocal } from '@/app/_helpers/date';
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
 
@@ -13,7 +13,6 @@ const BookingsPage = async () => {
     return redirect('/');
   }
 
-  // Se não é cliente, redirecionar
   if ((session.user as any).role !== 'CLIENT') {
     return redirect('/');
   }
@@ -45,23 +44,41 @@ const BookingsPage = async () => {
     })
   ]);
 
-  const confirmedBookingsWithPrice = confirmedBookings.map(booking => ({
-    ...booking,
-    date: convertDbDateToLocal(booking.date),
-    service: {
-      ...booking.service,
-      price: Number(booking.service.price)
-    }
-  }));
+  const confirmedBookingsWithPrice = confirmedBookings.map(booking => {
+    const localDate = convertDbDateToLocal(booking.date);
+    return {
+      ...booking,
+      date: {
+        year: localDate.getFullYear(),
+        month: localDate.getMonth() + 1,
+        day: localDate.getDate(),
+        hours: localDate.getHours(),
+        minutes: localDate.getMinutes()
+      },
+      service: {
+        ...booking.service,
+        price: Number(booking.service.price)
+      }
+    };
+  });
 
-  const finishedBookingsWithPrice = finishedBookings.map(booking => ({
-    ...booking,
-    date: convertDbDateToLocal(booking.date),
-    service: {
-      ...booking.service,
-      price: Number(booking.service.price)
-    }
-  }));
+  const finishedBookingsWithPrice = finishedBookings.map(booking => {
+    const localDate = convertDbDateToLocal(booking.date);
+    return {
+      ...booking,
+      date: {
+        year: localDate.getFullYear(),
+        month: localDate.getMonth() + 1,
+        day: localDate.getDate(),
+        hours: localDate.getHours(),
+        minutes: localDate.getMinutes()
+      },
+      service: {
+        ...booking.service,
+        price: Number(booking.service.price)
+      }
+    };
+  });
 
   return (
     <>
