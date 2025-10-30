@@ -164,73 +164,75 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
                   </Button>
                 </SheetTrigger>
 
-                <SheetContent className="p-0">
+                <SheetContent className="p-0 flex flex-col h-full">
                   <SheetHeader className="text-left px-5 py-6 border-b border-solid border-secondary">
                     <SheetTitle>Fazer Reserva</SheetTitle>
                   </SheetHeader>
 
-                  <div className="py-6">
-                    <Calendar
-                      mode="single"
-                      selected={date}
-                      onSelect={handleDateClick}
-                      locale={ptBR}
-                      fromDate={addDays(new Date(), 1)}
-                      styles={{
-                        head_cell: {
-                          width: "100%",
-                          textTransform: "capitalize",
-                        },
-                        cell: {
-                          width: "100%",
-                        },
-                        button: {
-                          width: "100%",
-                        },
-                        nav_button_previous: {
-                          width: "32px",
-                          height: "32px",
-                        },
-                        nav_button_next: {
-                          width: "32px",
-                          height: "32px",
-                        },
-                        caption: {
-                          textTransform: "capitalize",
-                        },
-                      }}
-                    />
-                  </div>
-
-                  {date && (
-                    <div className="flex gap-3 overflow-x-auto py-6 px-5 border-t border-solid border-secondary [&::-webkit-scrollbar]:hidden">
-                      {timeList.map((time) => (
-                        <Button
-                          onClick={() => handleHourClick(time)}
-                          variant={hour === time ? "default" : "outline"}
-                          className="rounded-full"
-                          key={time}
-                        >
-                          {time}
-                        </Button>
-                      ))}
+                  <div className="flex-1 overflow-y-auto">
+                    <div >
+                      <Calendar
+                        mode="single"
+                        selected={date}
+                        onSelect={handleDateClick}
+                        locale={ptBR}
+                        fromDate={addDays(new Date(), 1)}
+                        styles={{
+                          head_cell: {
+                            width: "100%",
+                            textTransform: "capitalize",
+                          },
+                          cell: {
+                            width: "100%",
+                          },
+                          button: {
+                            width: "100%",
+                          },
+                          nav_button_previous: {
+                            width: "32px",
+                            height: "32px",
+                          },
+                          nav_button_next: {
+                            width: "32px",
+                            height: "32px",
+                          },
+                          caption: {
+                            textTransform: "capitalize",
+                          },
+                        }}
+                      />
                     </div>
-                  )}
 
-                  <div className="py-6 px-5 border-t border-solid border-secondary">
-                    <BookingInfo
-                      booking={{
-                        barbershop: barbershop,
-                        date:
-                          date && hour
-                            ? createDateWithLocalTime(date, Number(hour.split(":")[0]), Number(hour.split(":")[1]))
-                            : undefined,
-                        service: service,
-                      }}
-                    />
+                    {date && (
+                      <div className="flex gap-3 overflow-x-auto py-5 px-5 border-t border-solid border-secondary [&::-webkit-scrollbar]:hidden">
+                        {timeList.map((time) => (
+                          <Button
+                            onClick={() => handleHourClick(time)}
+                            variant={hour === time ? "default" : "outline"}
+                            className="rounded-full"
+                            key={time}
+                          >
+                            {time}
+                          </Button>
+                        ))}
+                      </div>
+                    )}
+
+                    <div className="py-6 px-5 border-t border-solid border-secondary">
+                      <BookingInfo
+                        booking={{
+                          barbershop: barbershop,
+                          date:
+                            date && hour
+                              ? createDateWithLocalTime(date, Number(hour.split(":")[0]), Number(hour.split(":")[1]))
+                              : undefined,
+                          service: service,
+                        }}
+                      />
+                    </div>
                   </div>
 
-                  <SheetFooter className="px-5">
+                  <SheetFooter className="px-5 py-6 border-t border-solid border-secondary">
                     <Button onClick={handleBookingSubmit} disabled={!hour || !date || submitIsLoading}>
                       {submitIsLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                       Confirmar reserva
