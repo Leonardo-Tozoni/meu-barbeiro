@@ -4,6 +4,9 @@ const nextConfig = {
     remotePatterns: [
       {
         hostname: 'utfs.io'
+      },
+      {
+        hostname: 'bp72chbkwc.ufs.sh'
       }
     ]
   }
