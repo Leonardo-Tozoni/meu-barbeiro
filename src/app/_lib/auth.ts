@@ -24,12 +24,16 @@ export const authOptions: AuthOptions = {
         id: user.id,
         role: userWithBarber?.role,
         barbershopId: userWithBarber?.barber?.barbershopId,
+        cookieConsent: userWithBarber?.cookieConsent,
+        cookieConsentDate: userWithBarber?.cookieConsentDate,
       } as {
         id: string;
         name: string;
         email: string;
         role?: string;
         barbershopId?: string;
+        cookieConsent?: boolean | null;
+        cookieConsentDate?: Date | null;
       };
 
       return session;
