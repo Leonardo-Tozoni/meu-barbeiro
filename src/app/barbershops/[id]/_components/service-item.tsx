@@ -4,9 +4,11 @@ import BookingInfo from "@/app/_components/booking-info";
 import { Button } from "@/app/_components/ui/button";
 import { Calendar } from "@/app/_components/ui/calendar";
 import { Card, CardContent } from "@/app/_components/ui/card";
+import { Input } from "@/app/_components/ui/input";
 import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/app/_components/ui/sheet";
 import { createDateWithLocalTime, dateToComponents } from "@/app/_helpers/date";
 import { getDayBookings } from "@/app/barbershops/[id]/_actions/get-day-bookings";
+import { getUserPhone } from "@/app/barbershops/[id]/_actions/get-user-phone";
 import { saveBooking } from "@/app/barbershops/[id]/_actions/save-booking";
 import { generateDayTimeList } from "@/app/barbershops/[id]/_helpers/hours";
 import { Barbershop, Booking, Service } from "@prisma/client";
@@ -35,6 +37,7 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
   const [submitIsLoading, setSubmitIsLoading] = useState(false);
   const [sheetIsOpen, setSheetIsOpen] = useState(false);
   const [dayBookings, setDayBookings] = useState<Booking[]>([]);
+  const [phone, setPhone] = useState("");
 
   useEffect(() => {
     if (!date) {
@@ -48,6 +51,17 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
 
     refreshAvailableHours();
   }, [date, barbershop.id]);
+
+  useEffect(() => {
+    const loadUserPhone = async () => {
+      if (data?.user && sheetIsOpen) {
+        const userPhone = await getUserPhone((data.user as any).id);
+        setPhone(userPhone);
+      }
+    };
+
+    loadUserPhone();
+  }, [data?.user, sheetIsOpen]);
 
   const handleDateClick = (date: Date | undefined) => {
     setDate(date);
@@ -72,6 +86,12 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
         return;
       }
 
+      if (!phone || phone.trim() === "") {
+        toast.error("Por favor, informe seu número de telefone.");
+        setSubmitIsLoading(false);
+        return;
+      }
+
       const dateHour = Number(hour.split(":")[0]);
       const dateMinutes = Number(hour.split(":")[1]);
 
@@ -87,6 +107,7 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
         hours: components.hours,
         minutes: components.minutes,
         userId: (data.user as any).id,
+        phone: phone,
       });
 
       setSheetIsOpen(false);
@@ -228,7 +249,20 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
                       </div>
                     )}
 
-                    <div className="py-6 px-5 border-t border-solid border-secondary">
+                    <div className="py-6 px-5 border-t border-solid border-secondary space-y-4">
+                      <div>
+                        <label htmlFor="phone" className="block text-sm font-medium mb-2">
+                          Número de telefone
+                        </label>
+                        <Input
+                          id="phone"
+                          type="tel"
+                          placeholder="(00) 00000-0000"
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value)}
+                        />
+                      </div>
+                      
                       <BookingInfo
                         booking={{
                           barbershop: barbershop,
@@ -243,7 +277,7 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
                   </div>
 
                   <SheetFooter className="px-5 py-6 border-t border-solid border-secondary">
-                    <Button onClick={handleBookingSubmit} disabled={!hour || !date || submitIsLoading}>
+                    <Button onClick={handleBookingSubmit} disabled={!hour || !date || !phone || submitIsLoading}>
                       {submitIsLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                       Confirmar reserva
                     </Button>

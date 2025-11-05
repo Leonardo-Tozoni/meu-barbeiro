@@ -140,7 +140,14 @@ const OnboardingPage = () => {
 
   if (!session?.user) {
     return (
-      <div className="flex items-center justify-center min-h-screen p-5 bg-background">
+      <div className="flex flex-col items-center justify-center min-h-screen p-5 bg-background">
+        <Image
+          src="/logo.png"
+          alt="Meu barbeiro"
+          height={30}
+          width={200}
+          className="mb-4"
+        />
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle className="text-2xl text-center">
@@ -162,7 +169,14 @@ const OnboardingPage = () => {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen p-5 bg-background">
+    <div className="flex flex-col items-center justify-center min-h-screen p-5 bg-background">
+      <Image
+        src="/logo.png"
+        alt="Meu barbeiro"
+        height={30}
+        width={200}
+        className="mb-4"
+      />
       <div className="w-full max-w-2xl">
         {step === 'role' ? (
           <Card>
