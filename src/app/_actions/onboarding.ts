@@ -1,20 +1,20 @@
-"use server";
+'use server';
 
-import { revalidatePath } from "next/cache";
-import { db } from "@/app/_lib/prisma";
+import { db } from '@/app/_lib/prisma';
+import { revalidatePath } from 'next/cache';
 
 export const setUserAsClient = async (userId: string) => {
   try {
     await db.user.update({
       where: { id: userId },
-      data: { role: "CLIENT" },
+      data: { role: 'CLIENT' }
     });
 
-    revalidatePath("/");
+    revalidatePath('/');
     return { success: true };
   } catch (error) {
-    console.error("Erro ao definir usuário como cliente:", error);
-    return { success: false, error: "Erro ao definir usuário como cliente" };
+    console.error('Erro ao definir usuário como cliente:', error);
+    return { success: false, error: 'Erro ao definir usuário como cliente' };
   }
 };
 
@@ -23,25 +23,27 @@ export const setUserAsBarber = async (userId: string, barbershopId: string) => {
     // Verificar se a barbearia já tem um barbeiro
     const existingBarber = await db.barber.findFirst({
       where: { barbershopId },
-      include: { user: true },
+      include: { user: true }
     });
 
     if (existingBarber) {
       return {
         success: false,
-        error: `Esta barbearia já possui um barbeiro vinculado (${existingBarber.user.name || existingBarber.user.email})`,
+        error: `Esta barbearia já possui um barbeiro vinculado (${
+          existingBarber.user.name || existingBarber.user.email
+        })`
       };
     }
 
     // Verificar se o usuário já é barbeiro de outra barbearia
     const userBarber = await db.barber.findUnique({
-      where: { userId },
+      where: { userId }
     });
 
     if (userBarber) {
       return {
         success: false,
-        error: "Você já está vinculado a uma barbearia",
+        error: 'Você já está vinculado a uma barbearia'
       };
     }
 
@@ -49,23 +51,23 @@ export const setUserAsBarber = async (userId: string, barbershopId: string) => {
     await db.$transaction([
       db.user.update({
         where: { id: userId },
-        data: { role: "BARBER" },
+        data: { role: 'BARBER' }
       }),
       db.barber.create({
         data: {
           userId,
-          barbershopId,
-        },
-      }),
+          barbershopId
+        }
+      })
     ]);
 
-    revalidatePath("/");
-    revalidatePath("/barber-dashboard");
-    
+    revalidatePath('/');
+    revalidatePath('/barber-dashboard');
+
     return { success: true };
   } catch (error) {
-    console.error("Erro ao definir usuário como barbeiro:", error);
-    return { success: false, error: "Erro ao definir usuário como barbeiro" };
+    console.error('Erro ao definir usuário como barbeiro:', error);
+    return { success: false, error: 'Erro ao definir usuário como barbeiro' };
   }
 };
 
@@ -79,18 +81,18 @@ export const getAllBarbershops = async () => {
         imageUrl: true,
         _count: {
           select: {
-            barbers: true,
-          },
-        },
+            barbers: true
+          }
+        }
       },
       orderBy: {
-        name: "asc",
-      },
+        name: 'asc'
+      }
     });
 
     return barbershops;
   } catch (error) {
-    console.error("Erro ao buscar barbearias:", error);
+    console.error('Erro ao buscar barbearias:', error);
     return [];
   }
 };
@@ -106,47 +108,47 @@ export const createBarbershopAndSetBarber = async (
   try {
     // Verificar se o usuário já é barbeiro de outra barbearia
     const userBarber = await db.barber.findUnique({
-      where: { userId },
+      where: { userId }
     });
 
     if (userBarber) {
       return {
         success: false,
-        error: "Você já está vinculado a uma barbearia",
+        error: 'Você já está vinculado a uma barbearia'
       };
     }
 
     // Criar barbearia, atualizar role do usuário e criar vínculo
-    const result = await db.$transaction(async (tx) => {
+    const result = await db.$transaction(async tx => {
       const barbershop = await tx.barbershop.create({
         data: {
           name: barbershopData.name,
           address: barbershopData.address,
-          imageUrl: barbershopData.imageUrl,
-        },
+          imageUrl: barbershopData.imageUrl
+        }
       });
 
       await tx.user.update({
         where: { id: userId },
-        data: { role: "BARBER" },
+        data: { role: 'BARBER' }
       });
 
       await tx.barber.create({
         data: {
           userId,
-          barbershopId: barbershop.id,
-        },
+          barbershopId: barbershop.id
+        }
       });
 
       return barbershop;
     });
 
-    revalidatePath("/");
-    revalidatePath("/barber-dashboard");
+    revalidatePath('/');
+    revalidatePath('/barber-dashboard');
 
     return { success: true, barbershopId: result.id };
   } catch (error) {
-    console.error("Erro ao criar barbearia:", error);
-    return { success: false, error: "Erro ao criar barbearia" };
+    console.error('Erro ao criar barbearia:', error);
+    return { success: false, error: 'Erro ao criar barbearia' };
   }
 };
