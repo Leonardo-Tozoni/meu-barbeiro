@@ -174,18 +174,16 @@ const HoursManagement = ({ barbershopId }: HoursManagementProps) => {
 
   return (
     <Card className="mb-6">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle>Horários de Funcionamento</CardTitle>
-            <CardDescription>
-              Configure os horários de disponibilidade da sua barbearia
-            </CardDescription>
-          </div>
+      <CardHeader className="px-4 sm:px-6">
+        <div>
+          <CardTitle className="text-lg sm:text-xl">Horários de Funcionamento</CardTitle>
+          <CardDescription className="text-sm sm:text-base mt-1">
+            Configure os horários de disponibilidade da sua barbearia
+          </CardDescription>
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
+      <CardContent className="px-4 sm:px-6">
+        <div className="space-y-3 sm:space-y-4">
           {DAYS_OF_WEEK.map(day => {
             const hour = hours.find(h => h.dayOfWeek === day.value);
             if (!hour) return null;
@@ -193,28 +191,43 @@ const HoursManagement = ({ barbershopId }: HoursManagementProps) => {
             return (
               <div
                 key={day.value}
-                className="flex items-center gap-4 p-4 border border-solid border-secondary rounded-lg"
+                className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 p-3 sm:p-4 border border-solid border-secondary rounded-lg bg-secondary/5"
               >
-                <div className="w-32">
-                  <Label className="font-semibold">{day.label}</Label>
+                <div className="flex items-center justify-between sm:justify-start gap-3 sm:w-32 flex-shrink-0">
+                  <Label className="font-semibold text-sm sm:text-base">
+                    {day.label}
+                  </Label>
+                  <div className="flex items-center gap-2 sm:hidden">
+                    <input
+                      type="checkbox"
+                      checked={hour.isOpen}
+                      onChange={e =>
+                        updateHour(day.value, 'isOpen', e.target.checked)
+                      }
+                      className="w-5 h-5"
+                    />
+                    <Label className="text-sm">Aberto</Label>
+                  </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="hidden sm:flex items-center gap-2 flex-shrink-0">
                   <input
                     type="checkbox"
                     checked={hour.isOpen}
                     onChange={e =>
                       updateHour(day.value, 'isOpen', e.target.checked)
                     }
-                    className="w-4 h-4"
+                    className="w-5 h-5"
                   />
-                  <Label className="text-sm">Aberto</Label>
+                  <Label className="text-base">Aberto</Label>
                 </div>
 
                 {hour.isOpen && (
-                  <>
-                    <div className="flex items-center gap-2">
-                      <Label className="text-sm">De:</Label>
+                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 flex-1 w-full sm:w-auto">
+                    <div className="flex items-center gap-2 flex-1 sm:flex-initial min-w-0">
+                      <Label className="text-sm sm:text-base whitespace-nowrap text-gray-300">
+                        De:
+                      </Label>
                       <Input
                         type="time"
                         value={formatTime(hour.startHour, hour.startMinutes)}
@@ -222,12 +235,14 @@ const HoursManagement = ({ barbershopId }: HoursManagementProps) => {
                           handleTimeChange(day.value, 'start', e.target.value)
                         }
                         disabled={loading}
-                        className="w-32"
+                        className="flex-1 sm:w-32 min-w-0"
                       />
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      <Label className="text-sm">Até:</Label>
+                    <div className="flex items-center gap-2 flex-1 sm:flex-initial min-w-0">
+                      <Label className="text-sm sm:text-base whitespace-nowrap text-gray-300">
+                        Até:
+                      </Label>
                       <Input
                         type="time"
                         value={formatTime(hour.endHour, hour.endMinutes)}
@@ -235,22 +250,28 @@ const HoursManagement = ({ barbershopId }: HoursManagementProps) => {
                           handleTimeChange(day.value, 'end', e.target.value)
                         }
                         disabled={loading}
-                        className="w-32"
+                        className="flex-1 sm:w-32 min-w-0"
                       />
                     </div>
-                  </>
+                  </div>
                 )}
 
                 {!hour.isOpen && (
-                  <div className="text-sm text-gray-400">Fechado</div>
+                  <div className="text-sm sm:text-base text-gray-400">
+                    Fechado
+                  </div>
                 )}
               </div>
             );
           })}
         </div>
 
-        <div className="mt-6">
-          <Button onClick={handleSubmit} disabled={loading}>
+        <div className="mt-4 sm:mt-6">
+          <Button
+            onClick={handleSubmit}
+            disabled={loading}
+            className="w-full sm:w-auto"
+          >
             {loading ? (
               <Loader2 className="animate-spin mr-2" size={20} />
             ) : null}
