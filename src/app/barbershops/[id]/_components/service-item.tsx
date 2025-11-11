@@ -38,15 +38,29 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
   const [sheetIsOpen, setSheetIsOpen] = useState(false);
   const [dayBookings, setDayBookings] = useState<Booking[]>([]);
   const [phone, setPhone] = useState("");
+  const [availableTimes, setAvailableTimes] = useState<string[]>([]);
+  const [loadingTimes, setLoadingTimes] = useState(false);
 
   useEffect(() => {
     if (!date) {
+      setAvailableTimes([]);
       return;
     }
 
     const refreshAvailableHours = async () => {
-      const _dayBookings = await getDayBookings(barbershop.id, date);
-      setDayBookings(_dayBookings);
+      setLoadingTimes(true);
+      try {
+        const _dayBookings = await getDayBookings(barbershop.id, date);
+        setDayBookings(_dayBookings);
+        
+        const times = await generateDayTimeList(date, barbershop.id);
+        setAvailableTimes(times);
+      } catch (error) {
+        console.error('Erro ao carregar horários:', error);
+        setAvailableTimes([]);
+      } finally {
+        setLoadingTimes(false);
+      }
     };
 
     refreshAvailableHours();
@@ -130,37 +144,37 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
   };
 
   const timeList = useMemo(() => {
-  if (!date) return [];
+    if (!date || availableTimes.length === 0) return [];
 
-  const now = new Date();
-  const isToday =
-    date.getDate() === now.getDate() &&
-    date.getMonth() === now.getMonth() &&
-    date.getFullYear() === now.getFullYear();
+    const now = new Date();
+    const isToday =
+      date.getDate() === now.getDate() &&
+      date.getMonth() === now.getMonth() &&
+      date.getFullYear() === now.getFullYear();
 
-  return generateDayTimeList(date, barbershop.name).filter((time) => {
-    const [timeHour, timeMinutes] = time.split(":").map(Number);
+    return availableTimes.filter((time) => {
+      const [timeHour, timeMinutes] = time.split(":").map(Number);
 
-    const booking = dayBookings.find((booking) => {
-      const bookingHour = booking.date.getHours();
-      const bookingMinutes = booking.date.getMinutes();
-      return bookingHour === timeHour && bookingMinutes === timeMinutes;
+      const booking = dayBookings.find((booking) => {
+        const bookingHour = booking.date.getHours();
+        const bookingMinutes = booking.date.getMinutes();
+        return bookingHour === timeHour && bookingMinutes === timeMinutes;
+      });
+
+      if (booking) return false;
+
+      if (isToday) {
+        const selectedTime = new Date(date);
+        selectedTime.setHours(timeHour, timeMinutes, 0, 0);
+
+        const minAllowed = new Date(now.getTime() + 2 * 60 * 60 * 1000);
+
+        if (selectedTime <= minAllowed) return false;
+      }
+
+      return true;
     });
-
-    if (booking) return false;
-
-    if (isToday) {
-      const selectedTime = new Date(date);
-      selectedTime.setHours(timeHour, timeMinutes, 0, 0);
-
-      const minAllowed = new Date(now.getTime() + 2 * 60 * 60 * 1000);
-
-      if (selectedTime <= minAllowed) return false;
-    }
-
-    return true;
-  });
-}, [date, dayBookings, barbershop.name]);
+  }, [date, dayBookings, availableTimes]);
 
 
   return (
@@ -236,16 +250,26 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
 
                     {date && (
                       <div className="flex gap-3 overflow-x-auto py-5 px-5 border-t border-solid border-secondary [&::-webkit-scrollbar]:hidden">
-                        {timeList.map((time) => (
-                          <Button
-                            onClick={() => handleHourClick(time)}
-                            variant={hour === time ? "default" : "outline"}
-                            className="rounded-full"
-                            key={time}
-                          >
-                            {time}
-                          </Button>
-                        ))}
+                        {loadingTimes ? (
+                          <div className="flex items-center justify-center w-full py-4">
+                            <Loader2 className="animate-spin" size={20} />
+                          </div>
+                        ) : timeList.length === 0 ? (
+                          <p className="text-sm text-gray-400 w-full text-center py-4">
+                            Nenhum horário disponível para este dia.
+                          </p>
+                        ) : (
+                          timeList.map((time) => (
+                            <Button
+                              onClick={() => handleHourClick(time)}
+                              variant={hour === time ? "default" : "outline"}
+                              className="rounded-full"
+                              key={time}
+                            >
+                              {time}
+                            </Button>
+                          ))
+                        )}
                       </div>
                     )}
 
