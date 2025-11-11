@@ -10,7 +10,8 @@
     "prepare": "prisma generate",
     "create-barber": "ts-node scripts/create-barber.ts",
     "reset-user": "node scripts/reset-user-role.js",
-    "delete-user": "node scripts/delete-user.js"
+    "delete-user": "node scripts/delete-user.js",
+    "setup-plan": "ts-node --project tsconfig.scripts.json scripts/setup-stripe-plan.ts"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
@@ -36,6 +37,7 @@
     "react-dom": "^18",
     "react-hook-form": "^7.50.0",
     "sonner": "^1.4.0",
+    "stripe": "^19.3.0",
     "tailwind-merge": "^2.2.1",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.22.4"
