@@ -8,39 +8,40 @@ datasource db {
 }
 
 model User {
-  id                 String    @id @default(cuid())
-  name               String?
-  email              String?   @unique
-  emailVerified      DateTime?
-  image              String?
-  role               UserRole?
-  phone              String?
-  cookieConsent      Boolean?
-  cookieConsentDate  DateTime?
-  accounts           Account[]
-  barber             Barber?
-  bookings           Booking[]
-  sessions           Session[]
+  id                String    @id @default(cuid())
+  name              String?
+  email             String?   @unique
+  emailVerified     DateTime?
+  image             String?
+  role              UserRole?
+  phone             String?
+  cookieConsent     Boolean?
+  cookieConsentDate DateTime?
+  accounts          Account[]
+  barber            Barber?
+  bookings          Booking[]
+  sessions          Session[]
 }
 
 model Barbershop {
-  id       String    @id @default(uuid())
+  id       String            @id @default(uuid())
   name     String
   address  String
   imageUrl String
   barbers  Barber[]
   bookings Booking[]
   services Service[]
+  hours    BarbershopHours[]
 }
 
 model Barber {
-  id           String       @id @default(uuid())
-  userId       String       @unique
+  id           String        @id @default(uuid())
+  userId       String        @unique
   barbershopId String
-  createdAt    DateTime     @default(now())
+  createdAt    DateTime      @default(now())
   subscription Subscription?
-  barbershop   Barbershop   @relation(fields: [barbershopId], references: [id], onDelete: Cascade)
-  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  barbershop   Barbershop    @relation(fields: [barbershopId], references: [id], onDelete: Cascade)
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Service {
@@ -106,43 +107,58 @@ enum UserRole {
 }
 
 model Plan {
-  id             String        @id @default(uuid())
-  name           String
-  description    String?
-  price          Decimal       @db.Decimal(10, 2)
-  stripePriceId  String        @unique
-  stripeProductId String       @unique
-  active         Boolean       @default(true)
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-  subscriptions  Subscription[]
+  id              String         @id @default(uuid())
+  name            String
+  description     String?
+  price           Decimal        @db.Decimal(10, 2)
+  stripePriceId   String         @unique
+  stripeProductId String         @unique
+  active          Boolean        @default(true)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  subscriptions   Subscription[]
 }
 
 model Subscription {
-  id                  String    @id @default(uuid())
-  barberId            String    @unique
-  planId              String
+  id                   String    @id @default(uuid())
+  barberId             String    @unique
+  planId               String
   stripeSubscriptionId String    @unique
-  stripeCustomerId    String
-  status              String    // active, canceled, past_due, incomplete, etc.
-  currentPeriodStart  DateTime
-  currentPeriodEnd    DateTime
-  cancelAtPeriodEnd   Boolean   @default(false)
-  canceledAt          DateTime?
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
-  barber              Barber     @relation(fields: [barberId], references: [id], onDelete: Cascade)
-  plan                Plan       @relation(fields: [planId], references: [id])
-  payments            Payment[]
+  stripeCustomerId     String
+  status               String // active, canceled, past_due, incomplete, etc.
+  currentPeriodStart   DateTime
+  currentPeriodEnd     DateTime
+  cancelAtPeriodEnd    Boolean   @default(false)
+  canceledAt           DateTime?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  barber               Barber    @relation(fields: [barberId], references: [id], onDelete: Cascade)
+  plan                 Plan      @relation(fields: [planId], references: [id])
+  payments             Payment[]
 }
 
 model Payment {
-  id                  String       @id @default(uuid())
-  subscriptionId      String
-  stripePaymentIntentId String?    @unique
-  amount              Decimal      @db.Decimal(10, 2)
-  status              String       // succeeded, pending, failed, etc.
-  paidAt              DateTime?
-  createdAt           DateTime     @default(now())
-  subscription        Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  id                    String       @id @default(uuid())
+  subscriptionId        String
+  stripePaymentIntentId String?      @unique
+  amount                Decimal      @db.Decimal(10, 2)
+  status                String // succeeded, pending, failed, etc.
+  paidAt                DateTime?
+  createdAt             DateTime     @default(now())
+  subscription          Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+}
+
+model BarbershopHours {
+  id           String     @id @default(uuid())
+  barbershopId String
+  dayOfWeek    Int // 0 = Domingo, 1 = Segunda, ..., 6 = Sábado
+  startHour    Int // Hora de início (0-23)
+  startMinutes Int // Minutos de início (0-59)
+  endHour      Int // Hora de término (0-23)
+  endMinutes   Int // Minutos de término (0-59)
+  isOpen       Boolean    @default(true) // Se false, a barbearia está fechada neste dia
+  barbershop   Barbershop @relation(fields: [barbershopId], references: [id], onDelete: Cascade)
+
+  @@unique([barbershopId, dayOfWeek])
+  @@index([barbershopId])
 }

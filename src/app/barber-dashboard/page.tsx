@@ -5,26 +5,23 @@ import {
 import { getBarbershopServices } from '@/app/_actions/service';
 import Header from '@/app/_components/header';
 import ServicesManagement from '@/app/_components/services-management';
+import HoursManagement from '@/app/_components/hours-management';
 import {
   Avatar,
   AvatarFallback,
   AvatarImage
 } from '@/app/_components/ui/avatar';
 import { Badge } from '@/app/_components/ui/badge';
-import { Button } from '@/app/_components/ui/button';
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle
 } from '@/app/_components/ui/card';
-import { hasActiveSubscription } from '@/app/_helpers/subscription';
 import { authOptions } from '@/app/_lib/auth';
-import { db } from '@/app/_lib/prisma';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { getServerSession } from 'next-auth';
-import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
 const reconstructDate = (dateComponents: {
@@ -61,18 +58,6 @@ const BarberDashboardPage = async () => {
     return redirect('/');
   }
 
-  // Get barber to check subscription
-  const barber = await db.barber.findUnique({
-    where: { userId: (session.user as any).id },
-  });
-
-  if (!barber) {
-    return redirect('/');
-  }
-
-  // Check if barber has active subscription
-  const hasSubscription = await hasActiveSubscription(barber.id);
-
   const [todayBookings, upcomingBookings, services] = await Promise.all([
     getTodayBarbershopBookings(barbershopId),
     getUpcomingBarbershopBookings(barbershopId),
@@ -93,24 +78,9 @@ const BarberDashboardPage = async () => {
       <Header />
 
       <div className="px-5 py-6">
-        {!hasSubscription && (
-          <Card className="mb-6 border-yellow-500 bg-yellow-50 dark:bg-yellow-950">
-            <CardHeader>
-              <CardTitle className="text-lg">Assinatura Necessária</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-sm text-muted-foreground">
-                Para continuar usando a plataforma, você precisa de uma assinatura
-                ativa.
-              </p>
-              <Button asChild>
-                <Link href="/subscription">Assinar Agora</Link>
-              </Button>
-            </CardContent>
-          </Card>
-        )}
-
         <h1 className="text-xl font-bold mb-6">Dashboard do Barbeiro</h1>
+
+        <HoursManagement barbershopId={barbershopId} />
 
         <ServicesManagement
           barbershopId={barbershopId}
