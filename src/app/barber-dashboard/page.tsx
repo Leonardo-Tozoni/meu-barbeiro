@@ -5,6 +5,7 @@ import {
 import { getBarbershopServices } from '@/app/_actions/service';
 import Header from '@/app/_components/header';
 import ServicesManagement from '@/app/_components/services-management';
+import HoursManagement from '@/app/_components/hours-management';
 import {
   Avatar,
   AvatarFallback,
@@ -78,6 +79,8 @@ const BarberDashboardPage = async () => {
 
       <div className="px-5 py-6">
         <h1 className="text-xl font-bold mb-6">Dashboard do Barbeiro</h1>
+
+        <HoursManagement barbershopId={barbershopId} />
 
         <ServicesManagement
           barbershopId={barbershopId}
